@@ -1,0 +1,8 @@
+{
+  "dependencies": {
+    "@apollo/client": "^3.13.4",
+    "@mui/icons-material": "^6.4.8",
+    "@mui/material": "^6.4.8",
+    "graphql-ws": "^6.0.4"
+  }
+}

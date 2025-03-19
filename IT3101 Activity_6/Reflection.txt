@@ -1,0 +1,13 @@
+The Purpose and Benefits of Database Migrations
+Database migrations help manage changes to the database schema in a structured and version-controlled way. 
+Instead of manually altering tables, migrations allow developers to define changes in code, 
+ensuring consistency across different environments. The benefits include easier collaboration, rollback capabilities, and maintaining 
+a history of modifications. In this activity, using Prisma migrations ensured that the database schema remained synchronized with the 
+application, reducing potential errors and making it easier to update the database structure as needed.
+
+How GraphQL Differs from REST for CRUD Operations
+GraphQL offers more flexibility compared to REST by allowing clients to specify exactly what data 
+they need in a single request. Unlike REST, which requires multiple endpoints for different data structures, GraphQL consolidates 
+everything into a single endpoint, reducing over-fetching and under-fetching of data. In this activity, GraphQL made it possible to fetch
+ specific fields from the User model without retrieving unnecessary data, optimizing performance. Additionally, mutations in GraphQL provide a 
+ structured way to perform CRUD operations while keeping requests efficient and predictable.
