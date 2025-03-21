@@ -1,16 +1,18 @@
-import { ApolloServer, gql } from 'apollo-server';
+import express from 'express';
+import { ApolloServer } from '@apollo/server';
+import { expressMiddleware } from '@apollo/server/express4';
 import { PrismaClient } from '@prisma/client';
 import { createServer } from 'http';
-import { execute, subscribe } from 'graphql';
-import { SubscriptionServer } from 'subscriptions-transport-ws';
+import { WebSocketServer } from 'ws'; 
+import { useServer } from 'graphql-ws/lib/use/ws';  
 import { makeExecutableSchema } from '@graphql-tools/schema';
 import { PubSub } from 'graphql-subscriptions';
+import cors from 'cors';
 
 const prisma = new PrismaClient();
 const pubsub = new PubSub();
 
-// GraphQL Schema
-const typeDefs = gql`
+const typeDefs = `#graphql
   type Post {
     id: ID!
     title: String!
@@ -31,61 +33,67 @@ const typeDefs = gql`
   }
 `;
 
-// Resolvers
 const resolvers = {
   Query: {
     posts: async () => await prisma.post.findMany(),
     post: async (_, { id }) => await prisma.post.findUnique({ where: { id: Number(id) } }),
   },
-  
+
   Mutation: {
     createPost: async (_, { title, content }) => {
       const post = await prisma.post.create({ data: { title, content } });
 
-      // Publish the new post event
       pubsub.publish('POST_CREATED', { postCreated: post });
 
       return post;
-    }
+    },
   },
 
   Subscription: {
     postCreated: {
-      subscribe: () => pubsub.asyncIterator(['POST_CREATED'])
+      subscribe: () => pubsub.asyncIterableIterator(['POST_CREATED'])
     }
   }
 };
 
-// Create the schema
 const schema = makeExecutableSchema({ typeDefs, resolvers });
 
-// Create an HTTP server
-const httpServer = createServer();
+const app = express();
+app.use(cors({
+  origin: 'http://localhost:5173',
+  credentials: true
+}));
+app.use(bodyParser.json());
 
-// Create Apollo Server
-const server = new ApolloServer({
-  schema,
-  context: ({ req }) => ({ req, pubsub })
+const httpServer = createServer(app);
+
+const wsServer = new WebSocketServer({
+  server: httpServer,
+  path: '/graphql'  
 });
 
-// Start the Apollo server
-server.applyMiddleware({ app: httpServer });
+const serverCleanup = useServer({ schema }, wsServer);
 
-// Create a WebSocket server for subscriptions
-const subscriptionServer = SubscriptionServer.create(
-  {
-    schema,
-    execute,
-    subscribe,
-  },
-  {
-    server: httpServer, // Attach to the HTTP server
-    path: server.graphqlPath, // Use the same path as Apollo Server
-  }
-);
+const server = new ApolloServer({
+  schema,
+  plugins: [
+    {
+      async serverWillStart() {
+        return {
+          async drainServer() {
+            await serverCleanup.dispose();
+          },
+        };
+      },
+    },
+  ],
+});
 
-// Start the HTTP server
+await server.start();
+
+app.use('/graphql', expressMiddleware(server));
+
 httpServer.listen(4002, () => {
-  console.log(`🚀 Server ready at http://localhost:4002${server.graphqlPath}`);
-  console.log(`🚀 Subscriptions ready at ws://localhost:4002${server.graphqlPath}`);
+  console.log(`🚀 Server ready at http://localhost:4002/graphql`);
+  console.log(`🚀 Subscriptions running at ws://localhost:4002/graphql`);
 });
