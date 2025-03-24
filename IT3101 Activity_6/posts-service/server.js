@@ -8,6 +8,7 @@ import { useServer } from 'graphql-ws/lib/use/ws';
 import { makeExecutableSchema } from '@graphql-tools/schema';
 import { PubSub } from 'graphql-subscriptions';
 import cors from 'cors';
+import bodyParser from 'body-parser'
 
 const prisma = new PrismaClient();
 const pubsub = new PubSub();
@@ -26,10 +27,13 @@ const typeDefs = `#graphql
 
   type Mutation {
     createPost(title: String!, content: String!): Post!
+    updatePost(id: ID!, title: String!, content: String!): Post!
+    deletePost(id: ID!): Post!
   }
 
   type Subscription {
     postCreated: Post!
+    postUpdated: Post!
   }
 `;
 
@@ -47,11 +51,25 @@ const resolvers = {
 
       return post;
     },
+    
+    updatePost:async(_, {id, title, content}) => {
+      const post = await prisma.post.update({where: {id:Number(id)}, data: {title, content}})
+      
+      pubsub.publish('POST_UPDATED', { postUpdated: post });
+      return post
+    },
+    deletePost:(_, {id}) => {
+      const post = prisma.post.delete({where: {id:Number(id)}})
+      return post
+    },
   },
 
   Subscription: {
     postCreated: {
       subscribe: () => pubsub.asyncIterableIterator(['POST_CREATED'])
+    },
+    postUpdated: {
+      subscribe: () => pubsub.asyncIterableIterator(['POST_UPDATED'])
     }
   }
 };
