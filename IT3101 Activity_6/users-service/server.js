@@ -1,20 +1,25 @@
-import {ApolloServer,gql} from './$node_modules/apollo-server/dist/index.js'
-import { PrismaClient } from './$node_modules/@prisma/client/default.js';
+import express from 'express';
+import { ApolloServer } from '@apollo/server';
+import { expressMiddleware } from '@apollo/server/express4';
+import { PrismaClient } from '@prisma/client';
+import cors from 'cors';
+import bodyParser from 'body-parser';
 
 const prisma = new PrismaClient();
 
-
-const typeDefs = gql`
-type User{
+const typeDefs = `#graphql
+  type User {
     id: ID!
     name: String!
     email: String!
-}
-type Query {
+  }
+
+  type Query {
     users: [User!]!
     user(id: ID!): User
-}
-    type Mutation {
+  }
+
+  type Mutation {
     createUser(name: String!, email: String!): User!
     updateUser(id: ID!, name: String, email: String): User!
     deleteUser(id: ID!): User!
@@ -22,21 +27,41 @@ type Query {
 `;
 
 const resolvers = {
-    Query: {
-        users: async () => await prisma.user.findMany(),
-        user: async(_, {id}) => await prisma.user.findUnique({where: {id: Number(id)}}),
+  Query: {
+    users: async () => await prisma.user.findMany(),
+    user: async (_, { id }) => await prisma.user.findUnique({ where: { id: Number(id) } }),
+  },
+
+  Mutation: {
+    createUser: async (_, { name, email }) => {
+      return await prisma.user.create({ data: { name, email } });
     },
-    Mutation: {
-        createUser: async (_, {name, email}) =>
-            await prisma.user.create({data: {name, email}}), 
-        updateUser: async (_, {id,name, email}) =>
-            await prisma.user.update({where: {id: Number(id)}, data: {name, email}}), 
-        deleteUser: async (_, { id }) =>
-            await prisma.user.delete({ where: { id: Number(id) } }),
+    updateUser: async (_, { id, name, email }) => {
+      return await prisma.user.update({
+        where: { id: Number(id) },
+        data: { name, email }
+      });
+    },
+    deleteUser: async (_, { id }) => {
+      return await prisma.user.delete({ where: { id: Number(id) } });
     }
+  }
 };
 
-const server = new ApolloServer({ typeDefs, resolvers });
-server
-  .listen({ port: 4001 })
-  .then(serverInfo => console.log(`Server running at ${serverInfo.url}`));
+const server = new ApolloServer({
+  typeDefs,
+  resolvers
+});
+
+const app = express();
+app.use(cors());
+app.use(bodyParser.json());
+
+await server.start();
+
+app.use('/graphql', expressMiddleware(server));
+
+const PORT = 4003;
+app.listen(PORT, () => {
+  console.log(`🚀 User-service running at http://localhost:${PORT}/graphql`);
+});

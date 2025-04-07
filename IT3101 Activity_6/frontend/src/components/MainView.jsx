@@ -1,11 +1,11 @@
 import { useQuery, useSubscription } from "@apollo/client"
-import {POSTS_SUBSCRIPTION, POST_FETCH} from "../server-client/GqlQuery"
+import { POSTS_SUBSCRIPTION, POST_FETCH } from "../server-client/GqlQuery"
 import { useEffect, useState } from "react"
 import { PostsTable } from "./PostsTable"
 
 export function MainView() {
-    const {data: realtimeData} = useSubscription(POSTS_SUBSCRIPTION)
-    const {data: fetchData, loading} = useQuery(POST_FETCH) 
+    const { data: realtimeData } = useSubscription(POSTS_SUBSCRIPTION)
+    const { data: fetchData, loading } = useQuery(POST_FETCH)
     const [posts, setPosts] = useState([])
 
     useEffect(() => {
@@ -13,21 +13,21 @@ export function MainView() {
             if (fetchData) {
                 setPosts(fetchData.posts)
             }
-        } catch(err){
+        } catch (err) {
             throw new Error(err)
         }
     }, [fetchData])
-    
+
     useEffect(() => {
         try {
             if (realtimeData) {
                 const newPost = realtimeData.postCreated;
                 setPosts((prevPosts) => [...prevPosts, newPost]);
             }
-        } catch(err) {
+        } catch (err) {
             throw new Error(err)
-        }        
-      }, [realtimeData]);
+        }
+    }, [realtimeData]);
 
     if (loading) return <p>Loading...</p>;
     return (
