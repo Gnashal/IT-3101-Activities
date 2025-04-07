@@ -1,0 +1,105 @@
+/* Container and Card Styling */
+.posts-container {
+    padding: 1.5rem;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
+.posts-card {
+    width: 100%;
+    max-width: 80rem;
+    box-shadow: 0 8px 16px rgba(0, 0, 0, 0.1);
+    border-radius: 8px;
+    padding: 1.5rem;
+}
+
+/* Title Styling */
+.table-title {
+    text-align: center;
+    margin-bottom: 1rem;
+    font-size: 1.8rem;
+    color: #ffffff;
+}
+
+/* Empty State Styling */
+.empty-state {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    height: 10rem;
+}
+
+/* Table Styling */
+.posts-table {
+    width: 100%;
+    font-family: Arial, sans-serif;
+    border-spacing: 0;
+}
+
+/* Column Widths */
+.id-column {
+    width: 10%;
+}
+
+.title-column {
+    width: 30%;
+}
+
+.content-column {
+    width: 60%;
+}
+
+/* Pagination Styling */
+.p-paginator {
+    justify-content: center;
+    padding: 1rem;
+}
+
+.p-datatable .p-datatable-thead > tr > th {
+    background: #f4f4f4;
+    color: #333;
+    font-weight: bold;
+    text-align: left;
+    padding: 0.75rem;
+}
+
+.p-datatable .p-datatable-tbody > tr:nth-child(even) {
+    background: #f9f9f9;
+    color: black;
+}
+.p-datatable .p-datatable-tbody > tr:nth-child(even) tr:hover {
+    background: #000000;
+    color: rgb(255, 255, 255);
+}
+
+.p-datatable .p-datatable-tbody > tr:hover {
+    background: #eaf6ff;
+    cursor: pointer;
+    color: black;
+}
+
+/* Message Styling */
+.p-message {
+    font-size: 1rem;
+    padding: 1rem;
+    text-align: center;
+}
+
+.p-paginator {
+    display: flex;
+    justify-content: center;  
+    gap: 1rem;                 
+    padding: 1rem;
+}
+.p-paginator-page {
+    padding: 0.5rem 1rem;
+    border: 1px solid #ccc;
+    border-radius: 5px;
+    transition: 0.3s;
+}
+.p-paginator-page:hover {
+    background: #eaf6ff;
+    cursor: pointer;
+    color: black;
+}
