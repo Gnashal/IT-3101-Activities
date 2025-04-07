@@ -1,4 +1,4 @@
-import { gql } from "../../$node_modules/@apollo/client/index.js";
+import { gql } from "@apollo/client";
 
 export const POSTS_SUBSCRIPTION = gql`
   subscription {

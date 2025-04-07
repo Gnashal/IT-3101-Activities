@@ -1,0 +1,9 @@
+cd ./pub
+go get github.com/libp2p/go-libp2p
+cd ../sub
+go get github.com/libp2p/go-libp2p
+
+cd ../pub
+go run main.go
+cd ../sub
+go run main.go

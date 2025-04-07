@@ -1,6 +1,6 @@
-import { useQuery, useSubscription } from "../../$node_modules/@apollo/client/index.js"
-import { POSTS_SUBSCRIPTION, POST_FETCH } from "../server-client/GqlQuery"
-import { useEffect, useState } from "../../$node_modules/@types/react/index.js"
+import { useQuery, useSubscription } from "@apollo/client"
+import {POSTS_SUBSCRIPTION, POST_FETCH} from "../server-client/GqlQuery"
+import { useEffect, useState} from "react"
 import { PostsTable } from "./PostsTable"
 
 export function MainView() {

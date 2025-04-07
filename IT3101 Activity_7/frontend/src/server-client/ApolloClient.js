@@ -1,7 +1,7 @@
-import {ApolloClient, InMemoryCache, HttpLink, split } from '../../$node_modules/@apollo/client/index.js'
-import {getMainDefinition} from '../../$node_modules/@apollo/client/utilities/index.js'
-import { GraphQLWsLink } from "../../$node_modules/@apollo/client/link/subscriptions/index.js";
-import { createClient } from "../../$node_modules/graphql-ws/dist/index.js";
+import { ApolloClient, InMemoryCache, HttpLink, split } from '@apollo/client'; 
+import { getMainDefinition } from '@apollo/client/utilities'; 
+import { GraphQLWsLink } from '@apollo/client/link/subscriptions'; 
+import { createClient } from 'graphql-ws';
 
 const wsUrl = "ws://localhost:4002/graphql"
 const wsLink = new GraphQLWsLink (

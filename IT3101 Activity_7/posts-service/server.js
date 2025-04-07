@@ -1,14 +1,14 @@
-import express from './$node_modules/@types/express/index.js';
-import { ApolloServer } from './$node_modules/@apollo/server/dist/esm/index.js';
-import { expressMiddleware } from './$node_modules/@apollo/server/dist/esm/express4/index.js';
-import { PrismaClient } from './$node_modules/@prisma/client/default.js';
+import express from 'express';
+import { ApolloServer } from '@apollo/server';
+import { expressMiddleware } from '@apollo/server/express4';
+import { PrismaClient } from '@prisma/client';
 import { createServer } from 'http';
-import { WebSocketServer } from './$node_modules/ws/wrapper.mjs'; 
-import { useServer } from './$node_modules/graphql-ws/lib/use/ws.js';  
-import { makeExecutableSchema } from './$node_modules/@graphql-tools/schema/typings/index.js';
-import { PubSub } from './$node_modules/graphql-subscriptions/dist/index.js';
-import cors from './$node_modules/@types/cors/index.js';
-import bodyParser from './$node_modules/@types/body-parser/index.js'
+import { WebSocketServer } from 'ws';
+import { useServer } from 'graphql-ws/lib/use/ws';
+import { makeExecutableSchema } from '@graphql-tools/schema';
+import { PubSub } from 'graphql-subscriptions';
+import cors from 'cors';
+import bodyParser from 'body-parser';
 
 const prisma = new PrismaClient();
 const pubsub = new PubSub();
@@ -78,7 +78,7 @@ const schema = makeExecutableSchema({ typeDefs, resolvers });
 
 const app = express();
 app.use(cors({
-  origin: 'http://localhost:5173',
+  origin: ['http://localhost:10000 ', '*'],
   credentials: true
 }));
 app.use(bodyParser.json());
